@@ -3,4 +3,5 @@ export const enum ControllerName {
     ALBUM = 'album',
     ARTIST = 'artist',
     FAVS = 'favs',
+    TRACK = 'track',
 }

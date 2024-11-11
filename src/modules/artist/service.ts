@@ -1,5 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
+import { DB_TOKEN } from 'src/database/database-token';
+
 import { addEntityToCollection } from 'src/utils/add-entity-to-collection';
 import { deleteEntityFromCollection } from 'src/utils/delete-entity-from-collection';
 import { deleteIDFromFavsCollection } from 'src/utils/delete-id-from-favs-collection';
@@ -14,7 +16,7 @@ import { CreateArtistDTO, UpdateArtistDTO } from './types';
 
 @Injectable()
 export class ArtistService {
-    constructor(@Inject('DB_CONNECTION') private readonly database: DatabaseInterface) {}
+    constructor(@Inject(DB_TOKEN) private readonly database: DatabaseInterface) {}
 
     private isInvalidDto(dto: CreateArtistDTO | UpdateArtistDTO) {
         return (
