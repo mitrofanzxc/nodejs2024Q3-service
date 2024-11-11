@@ -35,8 +35,8 @@ export class AlbumController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async create(@Body() createAlbumDto: CreateAlbumDTO) {
-        return await this.albumService.createAlbum(createAlbumDto);
+    async create(@Body() createAlbumDTO: CreateAlbumDTO) {
+        return await this.albumService.createAlbum(createAlbumDTO);
     }
 
     @Delete(Route.ID)
@@ -47,7 +47,7 @@ export class AlbumController {
 
     @Put(Route.ID)
     @HttpCode(HttpStatus.OK)
-    async update(@Body() updateAlbumDto: UpdateAlbumDTO, @Param('id') id: string | null) {
-        return await this.albumService.updateAlbum(updateAlbumDto, id);
+    async update(@Body() updateAlbumDTO: UpdateAlbumDTO, @Param('id') id: string | null) {
+        return await this.albumService.updateAlbum(updateAlbumDTO, id);
     }
 }
