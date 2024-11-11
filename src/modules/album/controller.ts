@@ -6,8 +6,10 @@ import {
     HttpCode,
     HttpStatus,
     Param,
+    ParseUUIDPipe,
     Post,
     Put,
+    ValidationPipe,
 } from '@nestjs/common';
 
 import { AlbumService } from './service';
@@ -29,25 +31,39 @@ export class AlbumController {
 
     @Get(Route.ID)
     @HttpCode(HttpStatus.OK)
-    async getById(@Param('id') id: string | null) {
+    async getById(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.albumService.getAlbumById(id);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async create(@Body() createAlbumDTO: CreateAlbumDTO) {
-        return await this.albumService.createAlbum(createAlbumDTO);
+    async create(
+        @Body(new ValidationPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        createAlbumDto: CreateAlbumDTO,
+    ) {
+        return await this.albumService.createAlbum(createAlbumDto);
     }
 
     @Delete(Route.ID)
     @HttpCode(HttpStatus.NO_CONTENT)
-    async delete(@Param('id') id: string | null) {
+    async delete(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.albumService.deleteAlbum(id);
     }
 
     @Put(Route.ID)
     @HttpCode(HttpStatus.OK)
-    async update(@Body() updateAlbumDTO: UpdateAlbumDTO, @Param('id') id: string | null) {
-        return await this.albumService.updateAlbum(updateAlbumDTO, id);
+    async update(
+        @Body(new ValidationPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        updateAlbumDto: UpdateAlbumDTO,
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
+        return await this.albumService.updateAlbum(updateAlbumDto, id);
     }
 }

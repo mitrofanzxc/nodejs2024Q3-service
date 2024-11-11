@@ -6,8 +6,10 @@ import {
     HttpCode,
     HttpStatus,
     Param,
+    ParseUUIDPipe,
     Post,
     Put,
+    ValidationPipe,
 } from '@nestjs/common';
 
 import { TrackService } from './service';
@@ -29,25 +31,39 @@ export class TrackController {
 
     @Get(Route.ID)
     @HttpCode(HttpStatus.OK)
-    async getById(@Param('id') id: string | null) {
+    async getById(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.trackService.getTrackById(id);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async create(@Body() createTrackDto: CreateTrackDTO) {
+    async create(
+        @Body(new ValidationPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        createTrackDto: CreateTrackDTO,
+    ) {
         return await this.trackService.createTrack(createTrackDto);
     }
 
     @Delete(Route.ID)
     @HttpCode(HttpStatus.NO_CONTENT)
-    async delete(@Param('id') id: string | null) {
+    async delete(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.trackService.deleteTrack(id);
     }
 
     @Put(Route.ID)
     @HttpCode(HttpStatus.OK)
-    async update(@Body() updateTrackDto: UpdateTrackDTO, @Param('id') id: string | null) {
+    async update(
+        @Body(new ValidationPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        updateTrackDto: UpdateTrackDTO,
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.trackService.updateTrack(updateTrackDto, id);
     }
 }

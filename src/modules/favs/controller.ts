@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    ParseUUIDPipe,
+    Post,
+} from '@nestjs/common';
 
 import { FavsService } from './service';
 
@@ -17,37 +26,55 @@ export class FavsController {
 
     @Post(Route.TRACK_ID)
     @HttpCode(HttpStatus.CREATED)
-    async addFavTrack(@Param('id') id: string | null) {
+    async addFavTrack(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.favsService.addTrack(id);
     }
 
     @Post(Route.ALBUM_ID)
     @HttpCode(HttpStatus.CREATED)
-    async addFavAlbum(@Param('id') id: string | null) {
+    async addFavAlbum(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.favsService.addAlbum(id);
     }
 
     @Post(Route.ARTIST_ID)
     @HttpCode(HttpStatus.CREATED)
-    async addFavArtist(@Param('id') id: string | null) {
+    async addFavArtist(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.favsService.addArtist(id);
     }
 
     @Delete(Route.ARTIST_ID)
     @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteFAvArtist(@Param('id') id: string | null) {
+    async deleteFAvArtist(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.favsService.deleteArtist(id);
     }
 
     @Delete(Route.ALBUM_ID)
     @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteFavAlbum(@Param('id') id: string | null) {
+    async deleteFavAlbum(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.favsService.deleteAlbum(id);
     }
 
     @Delete(Route.TRACK_ID)
     @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteFavTrack(@Param('id') id: string | null) {
+    async deleteFavTrack(
+        @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }))
+        id: string | null,
+    ) {
         return await this.favsService.deleteTrack(id);
     }
 }
