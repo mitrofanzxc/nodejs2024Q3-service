@@ -1,6 +1,6 @@
 import { Album, Artist, FavoritesRequest, Track, User } from 'src/types/interfaces';
 
-export interface InterfaceDatabase {
+export interface DatabaseInterface {
     albums: Album[];
     artists: Artist[];
     tracks: Track[];
@@ -8,7 +8,7 @@ export interface InterfaceDatabase {
     favs: FavoritesRequest;
 }
 
-export const DATABASE: InterfaceDatabase = {
+export const DATABASE: DatabaseInterface = {
     albums: [],
     artists: [],
     tracks: [],
