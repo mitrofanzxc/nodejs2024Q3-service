@@ -1,10 +1,10 @@
-import { env } from 'node:process';
 import { Provider } from '@nestjs/common';
 
-import { DB_TOKEN } from './database-token';
 import { DATABASE } from './database';
 
+import { getDatabaseToken } from '../utils/get-db-token';
+
 export const DatabaseService: Provider = {
-    provide: env.TOKEN_DATABASE || DB_TOKEN,
+    provide: getDatabaseToken(),
     useValue: DATABASE,
 };

@@ -6,11 +6,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Route } from './constants/routes';
 
-const ROUTE_YAML = '../doc/api.yaml';
+const PATH_TO_YAML = '../doc/api.yaml';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    const document: OpenAPIObject = load(ROUTE_YAML);
+    const document: OpenAPIObject = load(PATH_TO_YAML);
     const path = Route.API;
 
     SwaggerModule.setup(path, app, document);

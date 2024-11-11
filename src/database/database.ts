@@ -1,4 +1,4 @@
-import { Album, Artist, FavoritesRequest, Track, User } from 'src/types/interfaces';
+import { Album, Artist, FavoritesRequest, Track, User } from '../types/interfaces';
 
 export interface DatabaseInterface {
     albums: Album[];
