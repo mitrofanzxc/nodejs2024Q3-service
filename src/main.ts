@@ -1,9 +1,12 @@
 import { env } from 'node:process';
-import * as yamljs from 'yamljs';
-import { SwaggerModule, OpenAPIObject } from '@nestjs/swagger';
 
+import * as yamljs from 'yamljs';
+
+import { SwaggerModule, OpenAPIObject } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
+
 import { AppModule } from './app.module';
+
 import { Route } from './constants/routes';
 
 const PATH_TO_YAML = './doc/api.yaml';

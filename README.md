@@ -17,6 +17,8 @@ git clone {repository URL}
 npm install
 ```
 
+Add .env file as in .env.example with PORT=4000.
+
 ## Running application
 
 ```bash
