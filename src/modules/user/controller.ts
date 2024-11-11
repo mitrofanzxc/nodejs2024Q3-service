@@ -9,10 +9,15 @@ import {
     Post,
     Put,
 } from '@nestjs/common';
-import { CreateUserDTO, UpdateUserDTO } from './types';
+
 import { UserService } from './service';
 
-@Controller('user')
+import { ControllerName } from 'src/constants/controller';
+import { Route } from 'src/constants/routes';
+
+import { CreateUserDTO, UpdateUserDTO } from './types';
+
+@Controller(ControllerName.USER)
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -22,7 +27,7 @@ export class UserController {
         return await this.userService.getUsers();
     }
 
-    @Get(':id')
+    @Get(Route.ID)
     @HttpCode(HttpStatus.OK)
     async getById(@Param('id') id: string | null) {
         return await this.userService.getUserById(id);
@@ -34,13 +39,13 @@ export class UserController {
         return await this.userService.createUser(createUserDTO);
     }
 
-    @Delete(':id')
+    @Delete(Route.ID)
     @HttpCode(HttpStatus.NO_CONTENT)
     async delete(@Param('id') id: string | null) {
         return await this.userService.deleteUser(id);
     }
 
-    @Put(':id')
+    @Put(Route.ID)
     @HttpCode(HttpStatus.OK)
     async update(@Body() updateUserDTO: UpdateUserDTO, @Param('id') id: string | null) {
         return await this.userService.updatePassword(updateUserDTO, id);
