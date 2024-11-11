@@ -46,6 +46,7 @@ export class ArtistService {
     async deleteArtist(id: string | null) {
         deleteEntityFromCollection(id, this.database.artists);
         deleteIDFromFavsCollection(id, this.database.favs.artists);
+
         this.database.albums = replaceIDToNull<Album>(id, this.database.albums, 'artistId');
         this.database.tracks = replaceIDToNull<Track>(id, this.database.tracks, 'artistId');
     }
@@ -56,12 +57,15 @@ export class ArtistService {
                 'Request body does not contain required fields or their format is not correct',
             );
         }
+
         validateIDFormat(id);
+
         const updatedArtist = updateEntityInCollection<Artist>(
             id,
             updateArtistDto,
             this.database.artists,
         );
+
         return updatedArtist;
     }
 }
