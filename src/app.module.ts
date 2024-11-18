@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseService } from './database/service';
 
 import { AlbumModule } from './modules/album/module';
 import { ArtistModule } from './modules/artist/module';
@@ -22,6 +21,6 @@ import { PrismaService } from './modules/prisma/service';
         UserModule,
     ],
     controllers: [AppController],
-    providers: [AppService, DatabaseService, PrismaService],
+    providers: [AppService, PrismaService],
 })
 export class AppModule {}
