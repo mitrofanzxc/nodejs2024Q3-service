@@ -24,8 +24,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "scan-app-vulnerabilities": "docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy --scanners vuln image nodejs2024q1-service-app",
-    "scan-postgres-vulnerabilities": "docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy --scanners vuln image nodejs2024q1-service-db",
+    "scan-app-vulnerabilities": "docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy --scanners vuln image nodejs2024Q3-service-app",
+    "scan-postgres-vulnerabilities": "docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy --scanners vuln image nodejs2024Q3-service-db",
     "scan-vulnerabilities": "npm run scan-app-vulnerabilities && npm run scan-postgres-vulnerabilities"
   },
   "dependencies": {

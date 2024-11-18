@@ -73,6 +73,7 @@ export class FavsService {
         const result = Object.entries(favorites).reduce((acc, [key, value]) => {
             acc[key] = value.map((item: any) => {
                 const { favoritesId, ...rest } = item;
+
                 return rest;
             });
 
