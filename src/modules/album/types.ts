@@ -1,11 +1,29 @@
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+
 export class CreateAlbumDTO {
-    readonly name: string | null;
-    readonly year: number | null;
+    @IsString()
+    @IsNotEmpty()
+    readonly name: string;
+
+    @IsNumber()
+    @IsNotEmpty()
+    readonly year: number;
+
+    readonly favoritesId: string | null;
+
     readonly artistId: string | null;
 }
 
 export class UpdateAlbumDTO {
-    readonly name: string | null;
-    readonly year: number | null;
+    @IsString()
+    @IsNotEmpty()
+    readonly name: string;
+
+    @IsNumber()
+    @IsNotEmpty()
+    readonly year: number;
+
+    readonly favoritesId: string | null;
+
     readonly artistId: string | null;
 }

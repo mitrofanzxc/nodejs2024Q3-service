@@ -1,74 +1,80 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
-import { DB_TOKEN } from 'src/database/database-token';
+import { PrismaService } from 'src/modules/prisma/service';
 
-import { addEntityToCollection } from 'src/utils/add-entity-to-collection';
-import { deleteEntityFromCollection } from 'src/utils/delete-entity-from-collection';
-import { deleteIDFromFavsCollection } from 'src/utils/delete-id-from-favs-collection';
-import { getEntityByID } from 'src/utils/get-entity-by-id';
-import { isIDValid } from 'src/utils/is-id-valid';
-import { replaceIDToNull } from 'src/utils/replace-id-to-null';
-import { updateEntityInCollection } from 'src/utils/update-entity-in-collection';
-import { validateIDFormat } from 'src/utils/validate-id-format';
-
-import { Track, Album } from 'src/types/interfaces';
-import { DatabaseInterface } from 'src/database/database';
 import { CreateAlbumDTO, UpdateAlbumDTO } from './types';
 
 @Injectable()
 export class AlbumService {
-    constructor(@Inject(DB_TOKEN) private readonly database: DatabaseInterface) {}
+    constructor(private prisma: PrismaService) {}
 
-    private isInvalidDTO(dto: CreateAlbumDTO | UpdateAlbumDTO) {
-        return (
-            !dto.name ||
-            typeof dto.year !== 'number' ||
-            typeof dto.name !== 'string' ||
-            !isIDValid(dto.artistId)
-        );
+    private async getExistedAlbum(id: string) {
+        const album = await this.prisma.album.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        if (!album) {
+            throw new NotFoundException('Album with id ${id} not found');
+        }
+
+        return album;
     }
 
     async getAlbums() {
-        return this.database.albums;
+        const albums = await this.prisma.album.findMany();
+
+        return albums;
     }
 
     async getAlbumById(id: string) {
-        return getEntityByID<Album>(id, this.database.albums);
+        const album = await this.getExistedAlbum(id);
+
+        if (album) {
+            return album;
+        }
     }
 
-    async createAlbum(createAlbumDTO: CreateAlbumDTO) {
-        if (this.isInvalidDTO(createAlbumDTO)) {
-            throw new BadRequestException(
-                'Request body does not contain required fields or their format is not correct',
-            );
-        } else {
-            return addEntityToCollection(createAlbumDTO, this.database.albums);
-        }
+    async createAlbum(createAlbumDto: CreateAlbumDTO) {
+        const newAlbum = await this.prisma.album.create({
+            data: {
+                id: uuidv4(),
+                ...createAlbumDto,
+            },
+        });
+
+        return newAlbum;
     }
 
     async deleteAlbum(id: string) {
-        deleteEntityFromCollection(id, this.database.albums);
+        const album = await this.getExistedAlbum(id);
 
-        this.database.tracks = replaceIDToNull<Track>(id, this.database.tracks, 'albumId');
-
-        deleteIDFromFavsCollection(id, this.database.favs.albums);
+        if (album) {
+            await this.prisma.album.delete({
+                where: {
+                    id,
+                },
+            });
+        }
     }
 
-    async updateAlbum(updateAlbumDTO: UpdateAlbumDTO, id: string) {
-        if (this.isInvalidDTO(updateAlbumDTO)) {
-            throw new BadRequestException(
-                'Request body does not contain required fields or their format is not correct',
-            );
+    async updateAlbum(updateAlbumDto: UpdateAlbumDTO, id: string) {
+        const album = await this.getExistedAlbum(id);
+
+        if (album) {
+            const updatedAlbum = await this.prisma.album.update({
+                where: {
+                    id,
+                },
+                data: {
+                    ...album,
+                    ...updateAlbumDto,
+                },
+            });
+
+            return updatedAlbum;
         }
-
-        validateIDFormat(id);
-
-        const updatedAlbum = updateEntityInCollection<Album>(
-            id,
-            updateAlbumDTO,
-            this.database.albums,
-        );
-
-        return updatedAlbum;
     }
 }

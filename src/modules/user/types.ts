@@ -1,9 +1,21 @@
+import { IsNotEmpty, IsString } from 'class-validator';
+
 export class CreateUserDTO {
-    readonly login: string | null;
-    readonly password: string | null;
+    @IsString()
+    @IsNotEmpty()
+    readonly login: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly password: string;
 }
 
 export class UpdateUserDTO {
-    readonly oldPassword: string | null;
-    readonly newPassword: string | null;
+    @IsString()
+    @IsNotEmpty()
+    readonly oldPassword: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly newPassword: string;
 }

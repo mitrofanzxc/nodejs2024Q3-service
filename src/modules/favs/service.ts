@@ -1,76 +1,184 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
-import { DB_TOKEN } from 'src/database/database-token';
-
-import { addIDToFavsCollection } from 'src/utils/add-id-to-favs-collection';
-import { deleteEntityIDFromFavsCollection } from 'src/utils/delete-entity-id-from-favs-collection';
-
-import { Album, Artist, FavoritesResponse, Track } from 'src/types/interfaces';
-import { DatabaseInterface } from 'src/database/database';
+import { PrismaService } from 'src/modules/prisma/service';
 
 @Injectable()
 export class FavsService {
-    constructor(@Inject(DB_TOKEN) private readonly database: DatabaseInterface) {}
+    constructor(private prisma: PrismaService) {}
 
-    async getFavs() {
-        const favsResponse: FavoritesResponse = {
-            artists: [],
-            albums: [],
-            tracks: [],
-        };
+    private async checkExistingFavorites() {
+        const existingFavorites = await this.prisma.favorites.findFirst();
 
-        Object.entries(this.database.favs).map(([key, value]) => {
-            const favorites = value.map((favId: string) => {
-                const favorite = this.database[key].find((el: any) => el.id === favId);
-
-                return favorite;
+        if (!existingFavorites) {
+            await this.prisma.favorites.create({
+                data: {} as Prisma.FavoritesCreateInput,
             });
+        }
+    }
 
-            favsResponse[key] = favorites;
+    private async getArtist(id: string) {
+        const artist = await this.prisma.artist.findUnique({
+            where: {
+                id,
+            },
         });
 
-        return favsResponse;
-    }
-
-    async addTrack(id: string) {
-        const track = addIDToFavsCollection<Track>(
-            id,
-            this.database.tracks,
-            this.database.favs.tracks,
-        );
-
-        return track;
-    }
-
-    async addAlbum(id: string) {
-        const album = addIDToFavsCollection<Album>(
-            id,
-            this.database.albums,
-            this.database.favs.albums,
-        );
-
-        return album;
-    }
-
-    async addArtist(id: string) {
-        const artist = addIDToFavsCollection<Artist>(
-            id,
-            this.database.artists,
-            this.database.favs.artists,
-        );
+        if (!artist) {
+            throw new UnprocessableEntityException(`Artist with id ${id} doesn't exist`);
+        }
 
         return artist;
     }
 
+    private async getAlbum(id: string) {
+        const album = await this.prisma.album.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        if (!album) {
+            throw new UnprocessableEntityException(`Album with id ${id} doesn't exist`);
+        }
+
+        return album;
+    }
+
+    private async getTrack(id: string) {
+        const track = await this.prisma.track.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        if (!track) {
+            throw new UnprocessableEntityException(`Track with id ${id} doesn't exist`);
+        }
+
+        return track;
+    }
+
+    async getFavs() {
+        await this.checkExistingFavorites();
+
+        const favorites = await this.prisma.favorites.findFirst({
+            select: {
+                albums: true,
+                artists: true,
+                tracks: true,
+            },
+        });
+
+        const result = Object.entries(favorites).reduce((acc, [key, value]) => {
+            acc[key] = value.map((item: any) => {
+                const { favoritesId, ...rest } = item;
+
+                return rest;
+            });
+
+            return acc;
+        }, {});
+
+        return result;
+    }
+
+    async addTrack(id: string) {
+        const track = await this.getTrack(id);
+
+        if (track) {
+            await this.checkExistingFavorites();
+            await this.prisma.track.update({
+                where: {
+                    id,
+                },
+                data: {
+                    favoritesId: 'favoriteId',
+                } as Prisma.TrackUpdateInput,
+            });
+
+            return track;
+        }
+    }
+
+    async addAlbum(id: string) {
+        const album = await this.getAlbum(id);
+
+        if (album) {
+            await this.checkExistingFavorites();
+            await this.prisma.album.update({
+                where: {
+                    id,
+                },
+                data: {
+                    favoritesId: 'favoriteId',
+                } as Prisma.TrackUpdateInput,
+            });
+
+            return album;
+        }
+    }
+
+    async addArtist(id: string) {
+        const artist = await this.getArtist(id);
+
+        if (artist) {
+            await this.checkExistingFavorites();
+            await this.prisma.artist.update({
+                where: {
+                    id,
+                },
+                data: {
+                    favoritesId: 'favoriteId',
+                } as Prisma.TrackUpdateInput,
+            });
+
+            return artist;
+        }
+    }
+
     async deleteArtist(id: string) {
-        deleteEntityIDFromFavsCollection(id, this.database.favs.artists);
+        const artist = await this.getArtist(id);
+
+        if (artist) {
+            await this.prisma.artist.update({
+                where: {
+                    id,
+                },
+                data: {
+                    favoritesId: null,
+                } as Prisma.TrackUpdateInput,
+            });
+        }
     }
 
     async deleteAlbum(id: string) {
-        deleteEntityIDFromFavsCollection(id, this.database.favs.albums);
+        const album = await this.getAlbum(id);
+
+        if (album) {
+            await this.prisma.album.update({
+                where: {
+                    id,
+                },
+                data: {
+                    favoritesId: null,
+                } as Prisma.TrackUpdateInput,
+            });
+        }
     }
 
     async deleteTrack(id: string) {
-        deleteEntityIDFromFavsCollection(id, this.database.favs.tracks);
+        const track = await this.getTrack(id);
+
+        if (track) {
+            await this.prisma.track.update({
+                where: {
+                    id,
+                },
+                data: {
+                    favoritesId: null,
+                } as Prisma.TrackUpdateInput,
+            });
+        }
     }
 }
